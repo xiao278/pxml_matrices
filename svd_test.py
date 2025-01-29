@@ -4,7 +4,7 @@ from numpy import linalg as LA
 from PIL import Image
 
 IMAGE_PATH = 'shanghai.png'
-TARGET_RANK = 200
+TARGET_RANK = 150
 
 np.set_printoptions(suppress=True)
 
@@ -63,7 +63,7 @@ def main():
 
     recon_arr = hsv_to_rgb(recon_arr)
     recon_arr = recon_arr * 255
-    recon_arr = recon_arr.astype(np.uint8)
+    recon_arr = recon_arr.clip(0, 255).astype(np.uint8)
     
     recon = Image.fromarray(recon_arr)
     recon.show()
