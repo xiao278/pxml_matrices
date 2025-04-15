@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def cosine_similarity(A, k):
     '''
     Takes a matrix A and a rank k to use
@@ -20,7 +21,7 @@ def cosine_similarity(A, k):
 
 
 
-def community_detection(A, threshold):
+def community_detection(A, threshold, sliced = True):
     '''
     Finds the community blocks looking at where ones are adjacent
 
@@ -33,15 +34,17 @@ def community_detection(A, threshold):
         if len(communities) != 0 and communities[-1][1] > i: continue #If there is an index in the communities that is larger than i
         first_one = i 
         for j in range(i, len(row)+1):
-            if j == len(row) or A[i,j] < threshold: # If all values past i meet the threshhold or if there is a value down the line that doesn't
+            if j == len(row) or A[i,j] < threshold: # If all values past i meet the threshold or if there is a value down the line that doesn't
                 last_one = j
                 communities.append((i,j))
                 break
     
-    for i in range(len(communities)): communities[i] = slice(communities[i][0], communities[i][1]) #Turns tuples into slices
-
+    if sliced:
+        for i in range(len(communities)): communities[i] = slice(communities[i][0], communities[i][1]) #Turns tuples into slices
+    
     return communities
-        
+
+
 
 def community_strength(A, threshold):
     '''
@@ -58,3 +61,11 @@ def community_strength(A, threshold):
 
     return strengths
 
+"""
+TODO: 
+- call community_detection "strict_community_detection" and set the threshold to a constant of .9
+- create a new community_detection function that has a threshold as input and tries to consolidate communities
+    produced from the strict_community_detection
+- consider other approaches to community_strength function
+- begin applying community_detection to larger data
+"""
