@@ -10,12 +10,12 @@ def cosine_similarity(A, k):
     CM = np.zeros(A.shape)
     U, S, V = np.linalg.svd(A)
     U_k = U[:, :k]
-    S_k = np.diag(S[:k])
+    S_k = S[:k]
     V_k = V[:k, :]
 
-    for i, u in enumerate(U_k @ S_k):
-        for j, v in enumerate((S_k @ V_k).T):
-            CM[i,j] = np.dot(u, v) / (np.linalg.norm(u) * np.linalg.norm(v))
+    for i, u in enumerate(U_k):
+        for j, v in enumerate((V_k).T):
+            CM[i,j] = np.dot(u, v)/ (np.linalg.norm(u) * np.linalg.norm(v))
     
     return CM
 
@@ -35,7 +35,7 @@ def strict_community_detection(A, threshold = .9, sliced = True):
     for i, row in enumerate(A):
         if len(communities) != 0 and communities[-1][1] > i: continue #If there is an index in the communities that is larger than i
         first_one = i 
-        for j in range(i, len(row)+1):
+        for j in range(i+1, len(row)+1):
             if j == len(row) or A[i,j] < threshold: # If all values past i meet the threshold or if there is a value down the line that doesn't
                 last_one = j
                 communities.append((i,j))
@@ -48,7 +48,7 @@ def strict_community_detection(A, threshold = .9, sliced = True):
 
 
 
-def community_strengths(A, threshold, ord = 'fro'):
+def community_strengths(A, threshold, order = 'fro'):
     '''
     takes the cosine similarity matrix and checks how stong each community is using an error
     '''
@@ -56,17 +56,17 @@ def community_strengths(A, threshold, ord = 'fro'):
     strengths = []
     for community_slice in communities:
         community = A[community_slice, community_slice]
-        strengths.append(community_strength(community, ord))
+        strengths.append(community_strength(community, order))
     return strengths
 
-def community_strength(community_block, ord):
+def community_strength(community_block, order):
     '''
     Takes a community block given by the reordered cosine matrix and judges how fit it is.
     Delta is the matrix of ones minus the community block
     We take the norm of delta and divide by 2k where k is how many nodes are in the block
     -1 <= 1 - ||Delta||/k <= 1
     '''
-    return 1 - np.linalg.norm(np.ones(community_block.shape) - community_block, ord)/( len(community_block))
+    return 1 - np.linalg.norm((np.ones(community_block.shape) - community_block), ord = order)/( len(community_block))
 
 
 
